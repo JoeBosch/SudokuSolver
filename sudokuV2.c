@@ -2,6 +2,30 @@
 
 const int bitField[10] = {0, 1, 2, 4, 8, 16, 32, 64, 128, 256};
 
+int main(int argc, char** argv)
+{   cell sudokuBoard[9][9];
+    //Gets intial board and prepares for solving.
+    if(argc != 2)
+    {   printf("Use the file format: %s <File Name>\n", argv[0]);
+        return -1;
+    }
+    readFile(sudokuBoard, argv[1]);
+    int placedCount = 0;
+    for(int i = 0; i < 9; i++)
+        for(int j = 0; j < 9; j++)
+            if(sudokuBoard[i][j].value > 0)
+            {   sudokuBoard[i][j].values = 0;
+                applyMask(sudokuBoard, i, j);
+                placedCount++;
+            }
+    placedCount = solveBoard(sudokuBoard, placedCount);
+    if(placedCount == 81)
+        printBoard(sudokuBoard);
+    else
+        printf("No solution\n");
+    return 0;
+}
+
 //Remove the bit from all numbers affected by the value at (x,y)
 void applyMask(cell sudokuBoard[9][9], int x, int y)
 {   int mask = ~bitField[sudokuBoard[x][y].value]; // The complement of the bit related to the value in the cell.
@@ -167,30 +191,6 @@ int solveBoard(cell sudokuBoard[9][9], int placedCount)
         }
     }
     return placedCount;
-}
-
-int main(int argc, char** argv)
-{   cell sudokuBoard[9][9];
-    //Gets intial board and prepares for solving.
-    if(argc != 2)
-    {   printf("Use the file format: %s <File Name>\n", argv[0]);
-        return -1;
-    }
-    readFile(sudokuBoard, argv[1]);
-    int placedCount = 0;
-    for(int i = 0; i < 9; i++)
-        for(int j = 0; j < 9; j++)
-            if(sudokuBoard[i][j].value > 0)
-            {   sudokuBoard[i][j].values = 0;
-                applyMask(sudokuBoard, i, j);
-                placedCount++;
-            }
-    placedCount = solveBoard(sudokuBoard, placedCount);
-    if(placedCount == 81)
-        printBoard(sudokuBoard);
-    else
-        printf("No solution\n");
-    return 0;
 }
 
 //Given a position in a section finds the position of other cells not in the same row or column.
